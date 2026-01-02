@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.custom-scroll::-webkit-scrollbar {
+  width: 8px;
+  display: none;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+  display: none;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #777;
+  display: none;
+}
+
+/* Cross-browser utility to hide scrollbars but keep scrolling functional */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}

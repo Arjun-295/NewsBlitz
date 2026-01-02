@@ -1,0 +1,7 @@
+docker stop chroma
+docker rm chroma
+docker volume rm chroma-data
+
+docker run -d --name chroma -p 8000:8000 -v chroma-data:/chroma chromadb/chroma
+
+node "web scraping/runScraper.js"
