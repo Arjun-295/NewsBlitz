@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { Book, Newspaper, Bot, LayoutGrid, Star } from "lucide-react";
 
 const navItems = [
@@ -10,6 +10,14 @@ const navItems = [
 ];
 
 function BottomNav() {
+  const location = useLocation();
+
+  // Hide the navigation bar on landing, login, and register pages
+  const hideOnPaths = ["/", "/user/login", "/user/register"];
+  if (hideOnPaths.includes(location.pathname)) {
+    return null;
+  }
+
   return (
     <div className="fixed bottom-6 left-0 right-0 z-50">
       <div className="max-w-7xl mx-auto px-4">
