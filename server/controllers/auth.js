@@ -66,7 +66,7 @@ export const loginUser = async (req, res) => {
         name: existingUser.name,
       },
       "CLIENT_SECRET_KEY",
-      { expiresIn: "60min" }
+      { expiresIn: "60min" },
     );
 
     res.status(200).json({

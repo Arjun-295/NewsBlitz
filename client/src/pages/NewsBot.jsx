@@ -59,17 +59,8 @@ const NewsChat = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/newsChat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: userText }), // ✅ ONLY query
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch response");
-      }
-
-      const data = await response.json();
+      const response = await api.post("newsChat", { query: userText });
+      const data = response.data;
 
       const botMessage = {
         id: Date.now() + 1,

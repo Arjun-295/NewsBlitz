@@ -1,5 +1,6 @@
 import express from "express";
 import mongodbConnection from "./config/db.js";
+import { startCronJobs } from "./cron.js";
 import authRoutes from "./routes/authRoutes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -10,9 +11,10 @@ const app = express();
 const PORT = 5000;
 
 mongodbConnection();
+startCronJobs();
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
     credentials: true,
   })
 );

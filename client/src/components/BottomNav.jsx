@@ -4,7 +4,7 @@ import { Book, Newspaper, Bot, LayoutGrid, Star } from "lucide-react";
 const navItems = [
   { label: "Feed", path: "/user/news-feed", icon: LayoutGrid },
   { label: "All News", path: "/user/all-news", icon: Newspaper },
-  { label: "Bot", path: "/user/news-bot", icon: Bot },
+  // { label: "Bot", path: "/user/news-bot", icon: Bot },
   { label: "Note", path: "/user/notes", icon: Book },
   { label: "Star", path: "/user/notes", icon: Star },
 ];

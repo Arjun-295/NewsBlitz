@@ -1,5 +1,4 @@
 import Note from "../models/Note.js";
-import express from "express";
 
 export const createNote = async (req, res) => {
   try {
@@ -58,7 +57,7 @@ export const updateNotes = async (req, res) => {
 
     const updatedNote = await Note.findByIdAndUpdate(
       { userId, _id: noteId },
-      { title, description }
+      { title, description },
     );
 
     if (!updatedNote) {
@@ -77,7 +76,7 @@ export const updateNotes = async (req, res) => {
 
 export const deleteNotes = async (req, res) => {
   try {
-    const userId = req.users?.id;
+    const userId = req.user?.id;
     const noteId = req.params.id;
     const deletedNote = await Note.findByIdAndDelete({ userId, _id: noteId });
     if (!deletedNote)
@@ -109,5 +108,26 @@ export const getNoteById = async (req, res) => {
       success: false,
       message: "Some Error Occured while fetching single note",
     });
+  }
+};
+
+export const pagination = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const total = await Note.countDocuments();
+    const posts = await Note.find().skip(skip).limit(limit).sort({ _id: -1 });
+
+    res.json({
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+      posts,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
   }
 };

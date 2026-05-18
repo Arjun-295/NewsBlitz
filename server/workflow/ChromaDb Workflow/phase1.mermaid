@@ -1,0 +1,5 @@
+graph LR
+    A[News URL] --> B[scrapeAndClean.js]
+    B --> C[chunkWithLangchain.js]
+    C --> D[scrapeAndStore.js]
+    D --> E[(ChromaDB)]
