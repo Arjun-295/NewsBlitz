@@ -3,7 +3,6 @@ import Navbar from "../components/Navbar";
 import NoteBox from "../components/NoteBox";
 import api from "../api/api";
 import { useEffect, useState } from "react";
-import Note from "../../../server/models/Note";
 import Loading from "../components/Loading";
 import Error from "../components/Error";
 
