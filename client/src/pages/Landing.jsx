@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useUser } from "@clerk/clerk-react";
 import { 
   ArrowRight, 
   Newspaper, 
@@ -45,6 +46,8 @@ const cardVariants = {
 };
 
 function Landing() {
+  const { isSignedIn, isLoaded } = useUser();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1f2123] via-[#2e3032] to-[#121314] text-white overflow-hidden relative font-sans">
       
@@ -65,18 +68,29 @@ function Landing() {
         </div>
         
         <div className="flex items-center gap-4">
-          <Link 
-            to="/user/login" 
-            className="text-gray-300 hover:text-white font-medium transition px-4 py-2 hover:bg-white/5 rounded-xl"
-          >
-            Sign In
-          </Link>
-          <Link 
-            to="/user/register" 
-            className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg hover:shadow-indigo-500/20 transition duration-300 active:scale-95"
-          >
-            Join Blitz
-          </Link>
+          {isLoaded && isSignedIn ? (
+            <Link 
+              to="/user/news-feed" 
+              className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-indigo-500/20 transition duration-300 active:scale-95"
+            >
+              Go to Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link 
+                to="/user/login" 
+                className="text-gray-300 hover:text-white font-medium transition px-4 py-2 hover:bg-white/5 rounded-xl"
+              >
+                Sign In
+              </Link>
+              <Link 
+                to="/user/register" 
+                className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg hover:shadow-indigo-500/20 transition duration-300 active:scale-95"
+              >
+                Join Blitz
+              </Link>
+            </>
+          )}
         </div>
       </header>
 
@@ -122,20 +136,32 @@ function Landing() {
             className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
             variants={itemVariants}
           >
-            <Link 
-              to="/user/register" 
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-indigo-500/30 transition duration-300 group active:scale-95"
-            >
-              <span>Get Started for Free</span>
-              <ArrowRight className="size-5 group-hover:translate-x-1 transition duration-200" />
-            </Link>
-            
-            <Link 
-              to="/user/login" 
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-semibold px-8 py-4 rounded-2xl transition duration-300"
-            >
-              <span>Explore Dashboard</span>
-            </Link>
+            {isLoaded && isSignedIn ? (
+              <Link 
+                to="/user/news-feed" 
+                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-indigo-500/30 transition duration-300 group active:scale-95"
+              >
+                <span>Go to Dashboard</span>
+                <ArrowRight className="size-5 group-hover:translate-x-1 transition duration-200" />
+              </Link>
+            ) : (
+              <>
+                <Link 
+                  to="/user/register" 
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-indigo-500/30 transition duration-300 group active:scale-95"
+                >
+                  <span>Get Started for Free</span>
+                  <ArrowRight className="size-5 group-hover:translate-x-1 transition duration-200" />
+                </Link>
+                
+                <Link 
+                  to="/user/login" 
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-semibold px-8 py-4 rounded-2xl transition duration-300"
+                >
+                  <span>Explore Dashboard</span>
+                </Link>
+              </>
+            )}
           </motion.div>
 
         </motion.div>
@@ -269,18 +295,29 @@ function Landing() {
               Create your secure profile, access real-time feeds, and start curating your professional tech bookmarks now.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link 
-                to="/user/register" 
-                className="w-full sm:w-auto bg-white text-gray-900 font-bold px-8 py-4 rounded-xl shadow-lg hover:bg-gray-100 transition duration-300 active:scale-95"
-              >
-                Join Now for Free
-              </Link>
-              <Link 
-                to="/user/login" 
-                className="w-full sm:w-auto bg-white/5 border border-white/10 text-white font-semibold px-8 py-4 rounded-xl hover:bg-white/10 transition duration-300"
-              >
-                Sign In to Account
-              </Link>
+              {isLoaded && isSignedIn ? (
+                <Link 
+                  to="/user/news-feed" 
+                  className="w-full sm:w-auto bg-white text-gray-900 font-bold px-8 py-4 rounded-xl shadow-lg hover:bg-gray-100 transition duration-300 active:scale-95"
+                >
+                  Go to Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link 
+                    to="/user/register" 
+                    className="w-full sm:w-auto bg-white text-gray-900 font-bold px-8 py-4 rounded-xl shadow-lg hover:bg-gray-100 transition duration-300 active:scale-95"
+                  >
+                    Join Now for Free
+                  </Link>
+                  <Link 
+                    to="/user/login" 
+                    className="w-full sm:w-auto bg-white/5 border border-white/10 text-white font-semibold px-8 py-4 rounded-xl hover:bg-white/10 transition duration-300"
+                  >
+                    Sign In to Account
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </section>
