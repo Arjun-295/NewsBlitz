@@ -1,7 +1,17 @@
 import axios from "axios";
 
+let baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/";
+
+// Bulletproof normalization: Ensure baseURL always ends with "/api/"
+if (!baseURL.endsWith("/")) {
+  baseURL += "/";
+}
+if (!baseURL.endsWith("api/")) {
+  baseURL += "api/";
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api/",
+  baseURL,
 });
 
 api.defaults.withCredentials = true;
