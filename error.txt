@@ -1,0 +1,87 @@
+```js
+import { ChromaClient } from "chromadb";
+import { GoogleGeminiEmbeddingFunction } from "@chroma-core/google-gemini";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// Gemini embedding function
+const embedder = new GoogleGeminiEmbeddingFunction({
+  apiKey: process.env.GEMINI_API_KEY,
+});
+
+// Chroma client
+export const chroma = new ChromaClient({
+  host: process.env.CHROMA_HOST || "localhost",
+  port: parseInt(process.env.CHROMA_PORT) || 8000,
+  ssl: process.env.CHROMA_SSL === "true",
+});
+
+// Cache collection instance
+let cachedCollection = null;
+
+// Sleep helper for retries
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+// Get or create collection with retry logic
+export const getNewsCollections = async (retries = 5) => {
+  try {
+    // Return cached collection if already connected
+    if (cachedCollection) {
+      return cachedCollection;
+    }
+
+    console.log("Connecting to ChromaDB...");
+
+    cachedCollection = await chroma.getOrCreateCollection({
+      name: "news_articles",
+      embeddingFunction: embedder,
+    });
+
+    const count = await cachedCollection.count();
+
+    console.log("✅ Connected to ChromaDB");
+    console.log("📄 Total Documents:", count);
+
+    return cachedCollection;
+  } catch (error) {
+    console.error("❌ ChromaDB connection failed:", error.message);
+
+    if (retries <= 0) {
+      throw error;
+    }
+
+    console.log(`🔄 Retrying in 10 seconds... (${retries} retries left)`);
+
+    await sleep(10000);
+
+    return getNewsCollections(retries - 1);
+  }
+};
+```
+
+And use it like this in routes/services:
+
+```js
+import { getNewsCollections } from "../config/chroma.js";
+
+const collection = await getNewsCollections();
+
+const results = await collection.query({
+  queryTexts: ["latest AI news"],
+  nResults: 5,
+});
+
+console.log(results);
+```
+
+Also set these environment variables correctly on [Render Dashboard](https://dashboard.render.com?utm_source=chatgpt.com):
+
+```env
+CHROMA_HOST=your-space-name.hf.space
+CHROMA_PORT=443
+CHROMA_SSL=true
+GEMINI_API_KEY=your_gemini_api_key
+```
