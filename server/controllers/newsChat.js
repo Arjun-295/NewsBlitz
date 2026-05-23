@@ -116,6 +116,6 @@ ${query}`;
     });
   } catch (err) {
     console.error("Chat Error:", err);
-    return res.status(500).json({ error: "Chat failed" });
+    return res.status(500).json({ error: "Chat failed", details: err.message });
   }
 };
