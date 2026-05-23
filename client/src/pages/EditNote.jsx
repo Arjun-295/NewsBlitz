@@ -1,14 +1,35 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import api from "../api/api";
+import Loading from "../components/Loading";
+import Error from "../components/Error";
 
-function CreateNote() {
+function EditNote() {
+  const { id } = useParams();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchNote = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get(`notes/getNote/${id}`);
+        setTitle(response.data.title);
+        setDescription(response.data.description);
+      } catch (err) {
+        console.error("Failed to fetch note:", err);
+        setErrorMsg("Failed to load the note. It may have been deleted.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) fetchNote();
+  }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,15 +41,23 @@ function CreateNote() {
     try {
       setSubmitting(true);
       setErrorMsg("");
-      await api.post("notes/createNote", { title, description });
+      await api.patch(`notes/updateNote/${id}`, { title, description });
       navigate("/user/notes");
     } catch (err) {
-      console.error("Failed to create note:", err);
-      setErrorMsg(err.response?.data?.message || "Failed to create note. Please try again.");
+      console.error("Failed to update note:", err);
+      setErrorMsg(err.response?.data?.message || "Failed to update note. Please try again.");
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0c0d0e] flex items-center justify-center text-white">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0c0d0e] text-white relative overflow-hidden pb-32">
@@ -44,10 +73,10 @@ function CreateNote() {
       {/* Page Title */}
       <div className="max-w-4xl mx-auto px-6 mt-14 mb-8 text-center relative z-10">
         <h1 className="text-4xl font-black tracking-tight text-white">
-          Create <span className="text-cyan-400 font-extrabold">Note</span>
+          Edit <span className="text-cyan-400 font-extrabold">Note</span>
         </h1>
         <p className="text-gray-400 text-sm mt-2 font-medium">
-          Draft new technical briefings or reference items.
+          Modify your existing technical briefing.
         </p>
       </div>
 
@@ -98,7 +127,7 @@ function CreateNote() {
               required
             />
             <p className="text-[11px] text-gray-500 mt-1.5 font-medium">
-              Add more context or details
+              Update context or details
             </p>
           </div>
         </div>
@@ -110,7 +139,7 @@ function CreateNote() {
             disabled={submitting}
             className="bg-cyan-500 hover:bg-cyan-400 text-black active:scale-95 transition-all duration-200 px-8 py-3 rounded-xl text-sm font-bold shadow-lg shadow-cyan-500/10 hover:shadow-cyan-400/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {submitting ? "Creating..." : "Create Note"}
+            {submitting ? "Updating..." : "Update Note"}
           </button>
           
           <button
@@ -126,4 +155,4 @@ function CreateNote() {
   );
 }
 
-export default CreateNote;
+export default EditNote;

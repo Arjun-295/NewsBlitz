@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import api from "../api/api";
 import { useNavigate } from "react-router-dom";
+import { SignInButton } from "@clerk/clerk-react";
+
 
 export default function LoginPage() {
   const {
@@ -23,20 +25,19 @@ export default function LoginPage() {
           email,
           password,
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
-      console.log(res);
       if (res?.data?.success) {
         toast.success("Successfully Logged In", {
           duration: 4000,
         });
         localStorage.setItem("token", res.data.token);
+        navigate("/user/news-feed");
       } else {
-        toast.error(res.data.message);
+        toast.error(res.data.message || "Login failed");
       }
-      navigate("/user/news-feed");
     } catch (error) {
-      console.log("Error occured in Login", error);
+      console.error("Error occured in Login", error);
       toast.error("Internal Server Error");
     }
     reset();
@@ -154,14 +155,40 @@ export default function LoginPage() {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="w-full py-2 rounded-lg bg-indigo-600 text-white font-medium shadow hover:bg-indigo-700 transition"
+                  className="w-full py-2 rounded-lg bg-indigo-600 text-white font-medium shadow hover:bg-indigo-700 transition duration-200 cursor-pointer active:scale-[0.98]"
                 >
                   Login
                 </button>
 
-                <p className="text-center text-sm text-slate-500">
+                {/* Clerk Login Option */}
+                <div className="relative my-5 flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-200"></div>
+                  </div>
+                  <span className="relative bg-white px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    Or continue with
+                  </span>
+                </div>
+
+                <SignInButton mode="modal">
+                  <button
+                    type="button"
+                    className="w-full flex items-center justify-center gap-3 py-2 px-4 border border-slate-200 rounded-lg bg-[#5756C5]/5 text-[#5756C5] font-semibold hover:bg-[#5756C5]/10 hover:border-[#5756C5]/30 hover:scale-[1.01] transition duration-200 cursor-pointer shadow-sm active:scale-[0.98]"
+                  >
+                    <svg
+                      className="h-5 w-5 fill-current text-[#5756C5]"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z" />
+                    </svg>
+                    <span>Continue with Clerk</span>
+                  </button>
+                </SignInButton>
+
+                <p className="text-center text-sm text-slate-500 mt-2">
                   Don't have an account?{" "}
-                  <a href="/register" className="text-indigo-600">
+                  <a href="/user/register" className="text-indigo-600 font-medium hover:underline">
                     Register
                   </a>
                 </p>
@@ -173,3 +200,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

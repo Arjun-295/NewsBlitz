@@ -1,8 +1,15 @@
 import Parser from "rss-parser";
 // import { getAllNews } from "../services/feedService.js";
 
-const parser = new Parser();
-const feeds = [
+const parser = new Parser({
+  headers: {
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    Accept: "application/rss+xml, application/xml, text/xml; q=0.1",
+  },
+});
+
+export const feeds = [
   "https://techcrunch.com/feed/",
   "https://www.theverge.com/rss/index.xml",
   "https://www.wired.com/feed/rss",

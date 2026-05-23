@@ -1,5 +1,6 @@
 import cron from "node-cron";
 import { getNewsCollections } from "./config/chroma.js";
+import { runScraper } from "./web-scraping/runScraper.js";
 
 // Keep track of the script running or not.
 let isRunning = false;
@@ -52,5 +53,10 @@ export const startCronJobs = () => {
     console.log("News cleanup cron job initialized (runs daily at midnight).");
     cron.schedule("0 0 * * *", () => {
       deleteOldNews();
+    });
+    
+    console.log("News scraper cron job initialized (runs every 8 hours).");
+    cron.schedule("0 */8 * * *", () => {
+      runScraper();
     });
 };

@@ -55,13 +55,14 @@ export const updateNotes = async (req, res) => {
         .json({ success: false, message: "No token provided" });
     }
 
-    const updatedNote = await Note.findByIdAndUpdate(
+    const updatedNote = await Note.findOneAndUpdate(
       { userId, _id: noteId },
       { title, description },
+      { new: true }
     );
 
     if (!updatedNote) {
-      return res.status(404).json(updatedNote);
+      return res.status(404).json({ success: false, message: "Note not found or unauthorized" });
     }
 
     res.status(200).json(updatedNote);
@@ -78,7 +79,7 @@ export const deleteNotes = async (req, res) => {
   try {
     const userId = req.user?.id;
     const noteId = req.params.id;
-    const deletedNote = await Note.findByIdAndDelete({ userId, _id: noteId });
+    const deletedNote = await Note.findOneAndDelete({ userId, _id: noteId });
     if (!deletedNote)
       return res
         .status(404)
@@ -113,13 +114,17 @@ export const getNoteById = async (req, res) => {
 
 export const pagination = async (req, res) => {
   try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
     const skip = (page - 1) * limit;
 
-    const total = await Note.countDocuments();
-    const posts = await Note.find().skip(skip).limit(limit).sort({ _id: -1 });
+    const total = await Note.countDocuments({ userId });
+    const posts = await Note.find({ userId }).skip(skip).limit(limit).sort({ createdAt: -1 });
 
     res.json({
       total,

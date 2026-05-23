@@ -20,3 +20,7 @@ export const getNewsCollections = async () => {
     embeddingFunction: embedder, // ✅ THIS IS THE KEY
   });
 };
+
+const collection = await getNewsCollections();
+const count = await collection.count();
+console.log("Total Documents:", count);

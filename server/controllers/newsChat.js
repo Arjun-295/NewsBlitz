@@ -1,6 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
 import dotenv from "dotenv";
 import { getNewsCollections } from "../config/chroma.js";
+import User from "../models/User.js";
 
 dotenv.config();
 
@@ -26,6 +27,26 @@ export const chatWithNews = async (req, res) => {
   }
 
   try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(401).json({ error: "Unauthorized. User not found." });
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const lastMessageDate = user.lastLlmMessageDate ? new Date(user.lastLlmMessageDate) : null;
+    if (lastMessageDate) lastMessageDate.setHours(0, 0, 0, 0);
+
+    if (!lastMessageDate || lastMessageDate.getTime() !== today.getTime()) {
+      user.llmMessageCount = 0;
+      user.lastLlmMessageDate = new Date();
+    }
+
+    if (user.llmMessageCount >= 3) {
+      return res.status(429).json({ error: "You have reached your daily limit of 3 AI messages." });
+    }
+
     const collection = await getNewsCollections();
 
     const results = await collection.query({
@@ -85,6 +106,9 @@ ${context}
 Question:
 ${query}`;
     const response = await model.invoke(prompt);
+
+    user.llmMessageCount += 1;
+    await user.save();
 
     return res.json({
       answer: response.content,

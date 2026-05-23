@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import API from "../api/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { SignUpButton } from "@clerk/clerk-react";
+
 
 export default function RegistrationPage() {
   const {
@@ -32,7 +34,7 @@ export default function RegistrationPage() {
       }
       navigate("/");
     } catch (error) {
-      console.log("Error occured in Register", error);
+      console.error("Error occured in Register", error);
       toast.error("Internal Server Error");
     }
     reset();
@@ -203,18 +205,51 @@ export default function RegistrationPage() {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="w-full py-2 rounded-lg bg-indigo-600 text-white font-medium shadow hover:bg-indigo-700 transition"
+                  className="w-full py-2 rounded-lg bg-indigo-600 text-white font-medium shadow hover:bg-indigo-700 transition duration-200 cursor-pointer active:scale-[0.98]"
                 >
                   Create account
                 </button>
 
-                <p className="text-center text-sm text-slate-500">
+                {/* Clerk Register Option */}
+                <div className="relative my-5 flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-200"></div>
+                  </div>
+                  <span className="relative bg-white px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    Or continue with
+                  </span>
+                </div>
+
+                <SignUpButton mode="modal">
+                  <button
+                    type="button"
+                    className="w-full flex items-center justify-center gap-3 py-2 px-4 border border-slate-200 rounded-lg bg-[#5756C5]/5 text-[#5756C5] font-semibold hover:bg-[#5756C5]/10 hover:border-[#5756C5]/30 hover:scale-[1.01] transition duration-200 cursor-pointer shadow-sm active:scale-[0.98]"
+                  >
+                    <svg
+                      className="h-5 w-5 fill-current text-[#5756C5]"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z" />
+                    </svg>
+                    <span>Register with Clerk</span>
+                  </button>
+                </SignUpButton>
+
+                <p className="text-center text-sm text-slate-500 mt-2">
+                  Already have an account?{" "}
+                  <a href="/user/login" className="text-indigo-600 font-medium hover:underline">
+                    Login
+                  </a>
+                </p>
+
+                <p className="text-center text-xs text-slate-400 mt-4">
                   By signing up you agree to our{" "}
-                  <a href="#" className="text-indigo-600">
+                  <a href="#" className="text-indigo-600 hover:underline">
                     Terms
                   </a>{" "}
                   and{" "}
-                  <a href="#" className="text-indigo-600">
+                  <a href="#" className="text-indigo-600 hover:underline">
                     Privacy Policy
                   </a>
                   .
@@ -227,3 +262,4 @@ export default function RegistrationPage() {
     </div>
   );
 }
+

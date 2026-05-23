@@ -13,6 +13,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  llmMessageCount: {
+    type: Number,
+    default: 0,
+  },
+  lastLlmMessageDate: {
+    type: Date,
+    default: null,
+  },
 });
 
 const User = mongoose.model("User", userSchema);

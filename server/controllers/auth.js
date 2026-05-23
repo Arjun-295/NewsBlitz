@@ -8,7 +8,6 @@ export const registerUser = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 12);
     const existingEmail = await User.findOne({ email: email });
-    console.log(existingEmail);
     if (existingEmail) {
       return res.json({
         success: false,
@@ -28,7 +27,7 @@ export const registerUser = async (req, res) => {
       message: "User is Registered Successfully",
     });
   } catch (error) {
-    console.log("Error happened at registerUser", error);
+    console.error("Error happened at registerUser", error);
     res.status(500).json({
       success: false,
       message: "Some error Occured while registering",
@@ -38,7 +37,6 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
 
   try {
     const existingUser = await User.findOne({ email: email });
@@ -80,7 +78,7 @@ export const loginUser = async (req, res) => {
       token: token,
     });
   } catch (error) {
-    console.log("Error occured", error);
+    console.error("Error occured", error);
     res.status(400).json({
       success: false,
       message: "Some Error Occured in login",
@@ -117,3 +115,56 @@ export const authMiddleware = (req, res, next) => {
     });
   }
 };
+
+export const clerkSync = async (req, res) => {
+  const { email, fullName, clerkId } = req.body;
+
+  if (!email || !fullName) {
+    return res.status(400).json({
+      success: false,
+      message: "Email and Full Name are required",
+    });
+  }
+
+  try {
+    let user = await User.findOne({ email: email });
+
+    if (!user) {
+      // Create user with a secure hashed version of clerkId as placeholder password
+      const hashedPassword = await bcrypt.hash(clerkId || "clerk_" + email, 12);
+      user = new User({
+        name: fullName,
+        email: email,
+        password: hashedPassword,
+      });
+      await user.save();
+    }
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        name: user.name,
+      },
+      "CLIENT_SECRET_KEY",
+      { expiresIn: "60min" }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Clerk session synchronized successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+      token: token,
+    });
+  } catch (error) {
+    console.error("Error in clerkSync:", error);
+    res.status(500).json({
+      success: false,
+      message: "Some error occurred while syncing Clerk session",
+    });
+  }
+};
+

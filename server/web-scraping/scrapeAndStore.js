@@ -1,18 +1,20 @@
 import { getNewsCollections } from "../config/chroma.js";
 import { scrapeAndClean } from "./cleanWebDocument.js";
 import { chunkWithLangchain } from "./chunkWithLangchain.js";
+import { feeds } from "../services/feedService.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-const urls = [
-  "https://techcrunch.com/2026/01/01/what-is-mastodon/",
-  "https://techcrunch.com/video/fizz-social-apps-ceo-on-why-anon-works/",
-];
 
 export async function scrapeAndStore(urls) {
   const collection = await getNewsCollections();
 
   for (const url of urls) {
+    const existing = await collection.get({ where: { source: url }, limit: 1 });
+
+    if (existing && existing.ids && existing.ids.length > 0) {
+      console.log("Skipping, already stored:", url);
+      continue;
+    }
     try {
       const { title, content } = await scrapeAndClean(url);
       const chunks = await chunkWithLangchain(content);
@@ -41,4 +43,3 @@ export async function scrapeAndStore(urls) {
     await sleep(1000);
   }
 }
-scrapeAndStore(urls);
