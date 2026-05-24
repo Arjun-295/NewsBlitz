@@ -5,7 +5,7 @@ export async function getContext(query) {
 
   const results = await collection.query({
     queryTexts: [query],
-    nResults: 20,
+    nResults: 5,
   });
 
   return results.documents.flat().join("\n\n");

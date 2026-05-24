@@ -14,6 +14,13 @@ export const chroma = new ChromaClient({
   host: process.env.CHROMA_HOST || "localhost",
   port: parseInt(process.env.CHROMA_PORT) || 8000,
   ssl: process.env.CHROMA_SSL === "true",
+  auth: process.env.CHROMA_TOKEN
+    ? {
+        provider: "token",
+        credentials: process.env.CHROMA_TOKEN,
+        header: "X-Chroma-Token",
+      }
+    : undefined,
 });
 
 // Cache collection instance

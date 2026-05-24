@@ -51,11 +51,11 @@ export const chatWithNews = async (req, res) => {
 
     const results = await collection.query({
       queryTexts: [query],
-      nResults: 20,
+      nResults: 5,
     });
 
     let context = "";
-    const MAX_CHARS = 30000;
+    const MAX_CHARS = 5000;
 
     for (const doc of results.documents.flat()) {
       if ((context + doc).length > MAX_CHARS) break;
